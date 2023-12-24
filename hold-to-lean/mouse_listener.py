@@ -71,7 +71,6 @@ class MouseListener:
                     logging.error(f"Error executing action for {button}: {e}")
 
             elif button == 'Button.right' and not self.ads:
-                self.mouse.press(Button.right)
                 self.ads = True
 
         else:
