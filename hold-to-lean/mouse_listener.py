@@ -6,6 +6,7 @@ import pyautogui
 from pynput import mouse
 from pynput.mouse import Button, Controller as MouseController
 
+
 def press_e():
     pyautogui.press('e')
 
@@ -18,6 +19,8 @@ class MouseListener:
 
     def __init__(self, config=None):
         self.held_buttons = set()
+        self.mouse = MouseController()
+        self.ads = False
 
         if config['left'] == config['right']:
             raise ValueError("Left and right buttons cannot be the same! Please reconfigure.")
@@ -38,13 +41,12 @@ class MouseListener:
 
     def check_failsafe(self):
         while True:
-            time.sleep(0.1)  # Adjust the interval as needed
             if self.failsafe_active:
                 logging.warning("Failsafe triggered - Exiting")
-                # Perform any necessary cleanup actions here
                 break
 
     def activate_failsafe(self):
+        print()
         self.failsafe_active = True
 
     def deactivate_failsafe(self):
@@ -53,7 +55,10 @@ class MouseListener:
     def on_click(self, x, y, button, pressed):
         if self.failsafe_active:
             return
+
         button = str(button)
+
+        print(f"Button: {button}, Pressed: {pressed}")
 
         if pressed:
             self.held_buttons.add(button)
@@ -65,6 +70,10 @@ class MouseListener:
                 except Exception as e:
                     logging.error(f"Error executing action for {button}: {e}")
 
+            elif button == 'Button.right' and not self.ads:
+                self.mouse.press(Button.right)
+                self.ads = True
+
         else:
             self.held_buttons.remove(button)
             logging.info(f"\tReleased: {button}")
@@ -74,6 +83,9 @@ class MouseListener:
                     self.button_actions[button]()
                 except Exception as e:
                     logging.error(f"Error executing action for {button}: {e}")
+            elif button == 'Button.right' and self.ads:
+                self.mouse.press(Button.right)
+                self.ads = False
 
     def start(self):
         self.failsafe_thread.start()
