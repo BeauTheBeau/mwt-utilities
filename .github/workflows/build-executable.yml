@@ -39,9 +39,16 @@ jobs:
         name: main-executable-${{ matrix.os }}
         path: dist/main
 
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=SHA::$(git rev-parse --verify HEAD) && echo ::set-output name=SHORT_SHA::$(git rev-parse --verify --short HEAD)
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: main-executable-ubuntu-latest
+        path: dist/main
 
     - name: Create Release
       id: create_release
@@ -49,17 +56,18 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.get_version.outputs.SHORT_SHA }}
-        release_name: Release ${{ steps.get_version.outputs.SHORT_SHA }}
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
 
     - name: Upload Release Asset
+      id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/main
+        asset_path: dist/main
         asset_name: main
-        asset_content_type: application/octet-streamag }} --notes "Release ${{ env.tag }}" --target master
+        asset_content_type: application/octet-stream
