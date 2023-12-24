@@ -34,9 +34,10 @@ if __name__ == "__main__":
                 f.close()
 
             logging.info("Configuration file found!")
+            not_config()
 
         except FileNotFoundError:
             logging.error("Configuration file not found! Taking you to the configuration helper.")
             config()
 
-        not_config()
+
