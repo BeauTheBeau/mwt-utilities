@@ -29,7 +29,7 @@ def main():
     logging.basicConfig(level=logging.INFO)
     listener = ButtonListener()
 
-    for direction in ["left", "right"]:
+    for direction in ["right", "left"]:
         print(f"\nWhat button do you want to use to lean {direction}?")
         listener.start()
         listener.join()
