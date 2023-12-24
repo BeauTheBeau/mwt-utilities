@@ -35,3 +35,28 @@ jobs:
       with:
         name: main-executable-${{ matrix.os }}
         path: dist/main
+
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=SHA::$(git rev-parse --verify HEAD) && echo ::set-output name=SHORT_SHA::$(git rev-parse --verify --short HEAD)
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.SHORT_SHA }}
+        release_name: Release ${{ steps.get_version.outputs.SHORT_SHA }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/main
+        asset_name: main
+        asset_content_type: application/octet-stream
