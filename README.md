@@ -25,4 +25,4 @@ Alternatively, you can build the project yourself.
 
 1. Clone the repository
 2. Install the dependencies with `pip install -r requirements.txt`
-3. Run `pyinstaller --onefile --icon=icon.ico hold-to-leanmain.py` in the root directory of the repository
+3. Run `pyinstaller --onefile --icon=icon.ico hold-to-lean/main.py` in the root directory of the repository
